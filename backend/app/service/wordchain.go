@@ -10,7 +10,7 @@ import (
 
 const (
 	WordchainKey   = "wordchain"
-	WordchainLimit = 10
+	WordchainLimit = 1000
 )
 
 type WordchainService struct {

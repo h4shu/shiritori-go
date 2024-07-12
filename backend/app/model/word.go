@@ -30,10 +30,16 @@ func (w *Word) UnmarshalBinary(data []byte) error {
 }
 
 func (w *Word) FirstChr() rune {
+	if len(*w) == 0 {
+		return 0
+	}
 	return (*w)[0]
 }
 
 func (w *Word) LastChr() rune {
+	if len(*w) == 0 {
+		return 0
+	}
 	return (*w)[len(*w)-1]
 }
 
