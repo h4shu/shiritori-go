@@ -1,7 +1,11 @@
-FROM golang:1.22.3
-
+FROM golang:1.22.5 AS builder
 COPY ./app /app
 WORKDIR /app
-EXPOSE 8080
+RUN go mod download
+RUN go mod verify
+RUN go build -o server .
 
-CMD go mod download && go mod verify && go run .
+FROM golang:1.22.5
+COPY --from=builder /app/server /app/server
+EXPOSE 8080
+CMD ["/app/server"]

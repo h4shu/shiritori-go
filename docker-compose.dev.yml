@@ -1,18 +1,18 @@
 services:
   frontend:
-    image: h4shu/shiritori-go-frontend
+    build: ./frontend
+    image: shiritori-go-frontend:v1
+    environment:
+      - VITE_BACKEND_BASEURL=http://localhost:8080
+    volumes:
+      - ./frontend/app:/app
+      - /app/node_modules
     ports:
       - 5173:5173
-    environment:
-      - VITE_BACKEND_BASEURL=https://${KOYEB_PUBLIC_DOMAIN}/api
 
   backend:
-    image: h4shu/shiritori-go-backend
-    depends_on: 
-      - db
-      - redis
-    ports:
-      - 8080:8080
+    build: ./backend
+    image: shiritori-go-backend:v1
     environment:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
@@ -23,6 +23,11 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD
       - PORT=8080
+    depends_on:
+      - db
+      - redis
+    ports:
+      - 8080:8080
   
   db:
     image: postgres:latest

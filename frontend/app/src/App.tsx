@@ -2,6 +2,8 @@ import { useState } from 'react'
 import useSWR from 'swr'
 import { VStack, Input, Text, Card, Alert, AlertIcon } from '@chakra-ui/react'
 
+const backendBaseURL = import.meta.env.VITE_BACKEND_BASEURL;
+
 const postFetcher = (url: string, data: string) => fetch(
   url, {
       mode: "cors",
@@ -32,7 +34,7 @@ function App() {
     const data = JSON.stringify({
       word: word
     })
-    postFetcher("http://localhost:8080/wc", data).then(res => {
+    postFetcher(`${backendBaseURL}/wc`, data).then(res => {
       if (!res.ok) {
         res.json().then((json) => {
             if (json.message)
@@ -52,7 +54,7 @@ function App() {
   if (errMsg)
     alertMsg = <Alert status='error'><AlertIcon />{errMsg}</Alert>
 
-  const { data, error, isLoading } = useSWR("http://localhost:8080/wc", getFetcher)
+  const { data, error, isLoading } = useSWR(`${backendBaseURL}/wc`, getFetcher)
   let history
   let historyLen
   if (error)
