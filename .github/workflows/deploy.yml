@@ -5,9 +5,13 @@ on:
     branches: [ "main" ]
 
 jobs:
-  deploy:
+  go-build:
+    uses: ./.github/workflows/go.yml
+
+  docker-build-push:
     permissions:
       packages: write
+    needs: go-build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,6 +29,10 @@ jobs:
       - name: Build and push Docker images
         run: docker compose -f docker-compose.build.yml build --no-cache --push
 
+  koyeb-deploy:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    steps:
       - name: Install and configure the Koyeb CLI
         uses: koyeb-community/install-koyeb-cli@v2
         with:
