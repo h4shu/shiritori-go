@@ -1,13 +1,13 @@
 services:
   frontend:
-    image: h4shu/shiritori-go-frontend
+    image: ghcr.io/h4shu/shiritori-go-frontend
     ports:
       - 5173:5173
     environment:
       - VITE_BACKEND_BASEURL=https://${KOYEB_PUBLIC_DOMAIN}/api
 
   backend:
-    image: h4shu/shiritori-go-backend
+    image: ghcr.io/h4shu/shiritori-go-backend
     depends_on: 
       - db
       - redis

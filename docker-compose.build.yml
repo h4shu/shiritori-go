@@ -5,7 +5,7 @@ services:
       platforms:
         - linux/amd64
         - linux/arm64
-    image: h4shu/shiritori-go-frontend
+    image: ghcr.io/h4shu/shiritori-go-frontend
 
   backend:
     build:
@@ -13,4 +13,4 @@ services:
       platforms:
         - linux/amd64
         - linux/arm64
-    image: h4shu/shiritori-go-backend
+    image: ghcr.io/h4shu/shiritori-go-backend
