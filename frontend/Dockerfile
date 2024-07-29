@@ -2,7 +2,7 @@ FROM node:22-slim
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-COPY ./app /app
+COPY ./src /app
 WORKDIR /app
 EXPOSE 5173
 RUN corepack enable

@@ -1,5 +1,5 @@
 FROM golang:1.22.5 AS builder
-COPY ./app /app
+COPY ./src /app
 WORKDIR /app
 RUN go mod download
 RUN go mod verify
