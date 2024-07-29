@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/h4shu/shiritori-go/model"
+	"github.com/h4shu/shiritori-go/entity"
 	"github.com/h4shu/shiritori-go/service"
 )
 
@@ -25,7 +25,7 @@ func (h *WordchainHandler) GetWordchain(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	res := &model.GetWordchainResponse{
+	res := &entity.GetWordchainResponse{
 		Wordchain: wc.ToStrSlice(),
 		Len:       wc.Len(),
 	}
@@ -33,16 +33,16 @@ func (h *WordchainHandler) GetWordchain(c echo.Context) error {
 }
 
 func (h *WordchainHandler) AddWordchain(c echo.Context) error {
-	var req model.AddWordchainRequest
+	var req entity.AddWordchainRequest
 	err := c.Bind(&req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
-	w := model.NewWord(req.Word)
+	w := entity.NewWord(req.Word)
 	err = h.svc.TryAddWord(c.Request().Context(), &w)
 	if err != nil {
 		switch err.(type) {
-		case *model.ErrWordInvalid:
+		case *entity.ErrWordInvalid:
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)

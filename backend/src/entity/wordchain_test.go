@@ -1,26 +1,26 @@
-package model_test
+package entity_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/h4shu/shiritori-go/model"
+	"github.com/h4shu/shiritori-go/entity"
 )
 
 func TestAppend(t *testing.T) {
-	var wc model.Wordchain
-	w := model.NewWord("あいうえお")
-	wc.Append(w)
+	var wc entity.Wordchain
+	w := entity.NewWord("あいうえお")
+	wc = *wc.Append(w)
 	got := wc[0]
 	assert.Equalf(t, got.String(), w.String(), "got '%s'; want '%s'", got, w)
 }
 
 func TestLen(t *testing.T) {
 	len := 10
-	var wc model.Wordchain
+	var wc entity.Wordchain
 	for i := 0; i < len; i++ {
-		wc.Append(model.NewWord("あいうえお"))
+		wc = *wc.Append(entity.NewWord("あいうえお"))
 	}
 	got := wc.Len()
 	assert.Equalf(t, got, len, "got %d; want %d", got, len)
@@ -28,9 +28,9 @@ func TestLen(t *testing.T) {
 
 func TestToStrSlice(t *testing.T) {
 	s := []string{"あいうえお", "かきくけこ", "さしすせそ"}
-	var wc model.Wordchain
+	var wc entity.Wordchain
 	for _, v := range s {
-		wc.Append(model.NewWord(v))
+		wc = *wc.Append(entity.NewWord(v))
 	}
 	got := wc.ToStrSlice()
 	for i, v := range s {

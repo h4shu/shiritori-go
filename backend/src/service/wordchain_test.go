@@ -8,7 +8,7 @@ import (
 	"github.com/go-redis/redismock/v9"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/h4shu/shiritori-go/model"
+	"github.com/h4shu/shiritori-go/entity"
 	"github.com/h4shu/shiritori-go/service"
 )
 
@@ -76,17 +76,17 @@ func TestTryAddWord(t *testing.T) {
 	ctx := context.Background()
 
 	str := "あ"
-	w := model.NewWord(str)
+	w := entity.NewWord(str)
 	mock.ExpectLRange(service.WordchainKey, 0, 0).SetVal([]string{})
 	err := svc.TryAddWord(ctx, &w)
-	var wantErr *model.ErrWordInvalid
+	var wantErr *entity.ErrWordInvalid
 	if assert.Errorf(t, err, "return error when '%s'", w) {
 		assert.ErrorAsf(t, err, &wantErr, "got wrong error: %v", err)
 	}
 
 	mock.ClearExpect()
 	str = "りんご"
-	w = model.NewWord(str)
+	w = entity.NewWord(str)
 	mock.ExpectLRange(service.WordchainKey, 0, 0).SetVal([]string{})
 	mock.Regexp().ExpectLPush(service.WordchainKey, str).SetErr(errors.New("FAIL"))
 	err = svc.TryAddWord(ctx, &w)

@@ -1,4 +1,4 @@
-package model
+package entity
 
 type (
 	Wordchain            []Word
@@ -13,8 +13,9 @@ type (
 	AddWordchainResponse struct{}
 )
 
-func (wc *Wordchain) Append(w Word) {
-	*wc = append(*wc, w)
+func (wc *Wordchain) Append(w Word) *Wordchain {
+	nwc := append(*wc, w)
+	return &nwc
 }
 
 func (wc *Wordchain) Len() int {

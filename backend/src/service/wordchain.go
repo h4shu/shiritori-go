@@ -5,7 +5,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/h4shu/shiritori-go/model"
+	"github.com/h4shu/shiritori-go/entity"
 )
 
 const (
@@ -23,33 +23,33 @@ func NewWordchainService(rdb *redis.Client) *WordchainService {
 	}
 }
 
-func (s *WordchainService) GetLastWord(ctx context.Context) (*model.Word, error) {
+func (s *WordchainService) GetLastWord(ctx context.Context) (*entity.Word, error) {
 	val, err := s.rdb.LRange(ctx, WordchainKey, 0, 0).Result()
 	if err != nil {
 		return nil, err
 	}
-	var w model.Word
+	var w entity.Word
 	if len(val) == 0 {
-		w = model.NewWord("しりとり")
+		w = entity.NewWord("しりとり")
 	} else {
-		w = model.NewWord(val[0])
+		w = entity.NewWord(val[0])
 	}
 	return &w, nil
 }
 
-func (s *WordchainService) GetWordchain(ctx context.Context) (*model.Wordchain, error) {
+func (s *WordchainService) GetWordchain(ctx context.Context) (*entity.Wordchain, error) {
 	val, err := s.rdb.LRange(ctx, WordchainKey, 0, WordchainLimit-1).Result()
 	if err != nil {
 		return nil, err
 	}
-	var wc model.Wordchain
+	var wc entity.Wordchain
 	for _, v := range val {
-		wc.Append(model.NewWord(v))
+		wc = *wc.Append(entity.NewWord(v))
 	}
 	return &wc, nil
 }
 
-func (s *WordchainService) pushWord(ctx context.Context, word *model.Word) error {
+func (s *WordchainService) pushWord(ctx context.Context, word *entity.Word) error {
 	_, err := s.rdb.LPush(ctx, WordchainKey, word).Result()
 	if err != nil {
 		return err
@@ -57,12 +57,12 @@ func (s *WordchainService) pushWord(ctx context.Context, word *model.Word) error
 	return nil
 }
 
-func (s *WordchainService) TryAddWord(ctx context.Context, word *model.Word) error {
+func (s *WordchainService) TryAddWord(ctx context.Context, word *entity.Word) error {
 	w, err := s.GetLastWord(ctx)
 	if err != nil {
 		return err
 	} else if !word.ValidateChain(w) {
-		return &model.ErrWordInvalid{
+		return &entity.ErrWordInvalid{
 			Word: word,
 		}
 	}
