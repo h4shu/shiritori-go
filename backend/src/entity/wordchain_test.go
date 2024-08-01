@@ -8,19 +8,39 @@ import (
 	"github.com/h4shu/shiritori-go/entity"
 )
 
+func TestNewWordchain(t *testing.T) {
+	wt := entity.WordTypeNone
+	got := entity.NewWordchain(wt)
+	assert.NotNil(t, got, "got nil")
+}
+
 func TestAppend(t *testing.T) {
-	var wc entity.Wordchain
-	w := entity.NewWord("あいうえお")
-	wc = *wc.Append(w)
-	got := wc[0]
-	assert.Equalf(t, got.String(), w.String(), "got '%s'; want '%s'", got, w)
+	w, err := entity.NewWord("abcdefg")
+	assert.Nilf(t, err, "unexpected error: %v", err)
+	hw, err := entity.NewHiraganaWord("あいうえお")
+	assert.Nilf(t, err, "unexpected error: %v", err)
+
+	wt := entity.WordTypeNone
+	wc := entity.NewWordchain(wt)
+	got, err := wc.Append(hw)
+	e := &entity.ErrWordTypeInvalid{hw, wt}
+	assert.EqualErrorf(t, err, e.Error(), "invalid error: %v", err)
+	assert.Nilf(t, got, "got %v; want nil", got)
+
+	got, err = wc.Append(&w)
+	assert.Nilf(t, err, "unexpected error: %v", err)
+	assert.NotNil(t, got, "got nil")
 }
 
 func TestLen(t *testing.T) {
+	w, err := entity.NewWord("あいうえお")
+	assert.Nilf(t, err, "unexpected error: %v", err)
 	len := 10
-	var wc entity.Wordchain
+	wt := entity.WordTypeNone
+	wc := entity.NewWordchain(wt)
 	for i := 0; i < len; i++ {
-		wc = *wc.Append(entity.NewWord("あいうえお"))
+		wc, err = wc.Append(&w)
+		assert.Nilf(t, err, "unexpected error: %v", err)
 	}
 	got := wc.Len()
 	assert.Equalf(t, got, len, "got %d; want %d", got, len)
@@ -28,9 +48,13 @@ func TestLen(t *testing.T) {
 
 func TestToStrSlice(t *testing.T) {
 	s := []string{"あいうえお", "かきくけこ", "さしすせそ"}
-	var wc entity.Wordchain
+	wt := entity.WordTypeNone
+	wc := entity.NewWordchain(wt)
 	for _, v := range s {
-		wc = *wc.Append(entity.NewWord(v))
+		w, err := entity.NewWord(v)
+		assert.Nilf(t, err, "unexpected error: %v", err)
+		wc, err = wc.Append(&w)
+		assert.Nilf(t, err, "unexpected error: %v", err)
 	}
 	got := wc.ToStrSlice()
 	for i, v := range s {
