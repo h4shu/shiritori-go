@@ -5,8 +5,8 @@ services:
     environment:
       - VITE_BACKEND_BASEURL=http://localhost:8080
     volumes:
-      - ./frontend/app:/app
-      - /app/node_modules
+      - ./frontend/src:/app
+      - /src/node_modules
     ports:
       - 5173:5173
 

@@ -70,7 +70,7 @@ func TestHiraganaWordValidateChain(t *testing.T) {
 	w2, err := entities.NewHiraganaWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got := w1.ValidateChain(w2)
-	assert.Falsef(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
+	assert.Errorf(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
 
 	s1 = "かもめ"
 	s2 = "め"
@@ -79,7 +79,7 @@ func TestHiraganaWordValidateChain(t *testing.T) {
 	w2, err = entities.NewHiraganaWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got = w1.ValidateChain(w2)
-	assert.Falsef(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
+	assert.Errorf(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
 
 	s1 = "しりとり"
 	s2 = "りんご"
@@ -88,5 +88,5 @@ func TestHiraganaWordValidateChain(t *testing.T) {
 	w2, err = entities.NewHiraganaWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got = w1.ValidateChain(w2)
-	assert.Truef(t, got, "'%s' -> '%s' is valid chain", s1, s2)
+	assert.Nilf(t, got, "'%s' -> '%s' is valid chain", s1, s2)
 }

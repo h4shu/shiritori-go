@@ -71,7 +71,7 @@ func TestWordValidateChain(t *testing.T) {
 	w2, err := entities.NewWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got := w1.ValidateChain(&w2)
-	assert.Falsef(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
+	assert.Errorf(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
 
 	s1 = "ab"
 	s2 = "b"
@@ -80,7 +80,7 @@ func TestWordValidateChain(t *testing.T) {
 	w2, err = entities.NewWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got = w1.ValidateChain(&w2)
-	assert.Falsef(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
+	assert.Errorf(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
 
 	s1 = "かもめ"
 	s2 = "め"
@@ -89,7 +89,7 @@ func TestWordValidateChain(t *testing.T) {
 	w2, err = entities.NewWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got = w1.ValidateChain(&w2)
-	assert.Falsef(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
+	assert.Errorf(t, got, "'%s' -> '%s' is invalid chain", s1, s2)
 
 	s1 = "apple"
 	s2 = "egg"
@@ -98,7 +98,7 @@ func TestWordValidateChain(t *testing.T) {
 	w2, err = entities.NewWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got = w1.ValidateChain(&w2)
-	assert.Truef(t, got, "'%s' -> '%s' is valid chain", s1, s2)
+	assert.Nilf(t, got, "'%s' -> '%s' is valid chain", s1, s2)
 
 	s1 = "しりとり"
 	s2 = "りんご"
@@ -107,7 +107,7 @@ func TestWordValidateChain(t *testing.T) {
 	w2, err = entities.NewWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got = w1.ValidateChain(&w2)
-	assert.Truef(t, got, "'%s' -> '%s' is valid chain", s1, s2)
+	assert.Nilf(t, got, "'%s' -> '%s' is valid chain", s1, s2)
 
 	s1 = "ごりら"
 	s2 = "らいおん"
@@ -116,5 +116,5 @@ func TestWordValidateChain(t *testing.T) {
 	w2, err = entities.NewWord(s2)
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	got = w1.ValidateChain(&w2)
-	assert.Truef(t, got, "'%s' -> '%s' is valid chain", s1, s2)
+	assert.Nilf(t, got, "'%s' -> '%s' is valid chain", s1, s2)
 }

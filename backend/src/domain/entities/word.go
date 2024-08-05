@@ -12,11 +12,18 @@ type (
 		UnmarshalBinary(data []byte) error
 		FirstChr() rune
 		LastChr() rune
-		ValidateChain(next IWord) bool
+		ValidateChain(next IWord) error
 	}
-	ErrWordEmpty   struct{}
+	ErrWordEmpty struct{}
+	ErrWordShort struct {
+		Word IWord
+	}
 	ErrWordInvalid struct {
 		Word IWord
+	}
+	ErrWordchainInvalid struct {
+		Prev IWord
+		Next IWord
 	}
 )
 
@@ -49,18 +56,39 @@ func (w *Word) LastChr() rune {
 	return (*w)[len(*w)-1]
 }
 
-func (w *Word) ValidateChain(next IWord) bool {
+func (w *Word) ValidateChain(next IWord) error {
 	nw, ok := next.(*Word)
-	if !ok || len(*nw) < 2 || w.LastChr() != nw.FirstChr() {
-		return false
+	if !ok {
+		return &ErrWordInvalid{
+			Word: nw,
+		}
 	}
-	return true
+	if len(*nw) < 2 {
+		return &ErrWordShort{
+			Word: nw,
+		}
+	}
+	if w.LastChr() != nw.FirstChr() {
+		return &ErrWordchainInvalid{
+			Prev: w,
+			Next: nw,
+		}
+	}
+	return nil
 }
 
 func (e *ErrWordEmpty) Error() string {
 	return "文字列が空です"
 }
 
+func (e *ErrWordShort) Error() string {
+	return fmt.Sprintf("'%s' は、文字数が足りません", e.Word)
+}
+
 func (e *ErrWordInvalid) Error() string {
 	return fmt.Sprintf("'%s' は、正しくありません", e.Word)
+}
+
+func (e *ErrWordchainInvalid) Error() string {
+	return fmt.Sprintf("しりとりが正しくありません: %s => %s", e.Prev, e.Next)
 }

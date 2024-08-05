@@ -58,9 +58,14 @@ func (hw *HiraganaWord) LastChr() rune {
 	return hw.w.LastChr()
 }
 
-func (hw HiraganaWord) ValidateChain(next IWord) bool {
+func (hw HiraganaWord) ValidateChain(next IWord) error {
 	nhw, ok := next.(*HiraganaWord)
-	return ok && hw.w.ValidateChain(&(nhw.w)) && (nhw.LastChr() != 'ん')
+	if !ok || (nhw.LastChr() == 'ん') {
+		return &ErrWordInvalid{
+			Word: next,
+		}
+	}
+	return hw.w.ValidateChain(&(nhw.w))
 }
 
 func (e *ErrNotHiragana) Error() string {
