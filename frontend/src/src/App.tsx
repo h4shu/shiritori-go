@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import useSWR from 'swr'
 import { VStack, Input, Text, Card, Alert, AlertIcon } from '@chakra-ui/react'
+import LastWord from './components/shiritori/LastWord'
 
 const backendBaseURL = import.meta.env.VITE_BACKEND_BASEURL;
 
@@ -56,7 +57,7 @@ function App() {
 
   const { data, error, isLoading } = useSWR(`${backendBaseURL}/wc`, getFetcher)
   let history
-  let historyLen
+  let historyLen = "0"
   if (error)
     history = <Text>failed to load</Text>
   else if (isLoading)
@@ -73,6 +74,7 @@ function App() {
   return (
     <VStack>
       <Text>ことばのかず：{historyLen}</Text>
+      <LastWord />
       <form onSubmit={handleSubmit}>
         <Input name='word' placeholder='つぎのことば'/>
       </form>

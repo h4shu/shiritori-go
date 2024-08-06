@@ -7,5 +7,4 @@ WORKDIR /app
 EXPOSE 5173
 RUN corepack enable
 RUN pnpm config set store-dir ${PNPM_HOME}/store
-RUN pnpm install
-CMD pnpm run dev
+CMD pnpm install && pnpm run dev

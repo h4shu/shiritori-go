@@ -31,6 +31,7 @@ func Server(port string) {
 	e.Use(middleware.CORS())
 
 	e.GET("/wc", sh.List)
+	e.GET("/wc/last", sh.GetLast)
 	e.POST("/wc", sh.Append)
 	e.Logger.Fatal(e.Start(":" + port))
 }
