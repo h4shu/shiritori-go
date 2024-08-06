@@ -48,9 +48,12 @@ func (m *WordchainRepositoryMock) Append(ctx context.Context, w entities.IWord) 
 
 func TestAppend(t *testing.T) {
 	ctx := context.Background()
+	ty := entities.WordTypeHiragana
+	wc := entities.NewWordchain(ty)
 	lw, err := entities.NewHiraganaWord("しりとり")
 	assert.Nilf(t, err, "unexpected error: %v", err)
-	m := NewWordchainRepositoryMock(lw, nil, nil, nil, nil)
+	wc.Append(lw)
+	m := NewWordchainRepositoryMock(nil, nil, wc, nil, nil)
 	u := intractors.NewWordchainUsecase(m, entities.WordTypeHiragana, 100)
 	w, err := entities.NewHiraganaWord("りんご")
 	assert.Nilf(t, err, "unexpected error: %v", err)
