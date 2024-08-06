@@ -32,7 +32,7 @@ func (r *WordchainRepository) GetLast(ctx context.Context) (entities.IWord, erro
 	if err != nil {
 		return nil, err
 	} else if w == "" {
-		return entities.GetFirstWordForType(r.t)
+		return nil, nil
 	}
 	return entities.NewWordWithType(w, r.t)
 }

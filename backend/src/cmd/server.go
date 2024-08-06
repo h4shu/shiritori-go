@@ -21,7 +21,7 @@ func Server(port string) {
 	wt := entities.WordTypeHiragana
 	ws := redis.NewWordchainStore(rdb, "wordchain")
 	wr := repositories.NewWordchainRepository(ws, wt)
-	wu := intractors.NewWordchainUsecase(wr, wt)
+	wu := intractors.NewWordchainUsecase(wr, wt, 1000)
 	wp := presenters.NewWordchainPresenter()
 	wc := controllers.NewWordchainController(wu, wp, wt)
 	sh := handlers.NewWordchainHandler(wc)

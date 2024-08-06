@@ -18,6 +18,9 @@ type (
 	ErrWordShort struct {
 		Word IWord
 	}
+	ErrWordDuplicated struct {
+		Word IWord
+	}
 	ErrWordInvalid struct {
 		Word IWord
 	}
@@ -68,6 +71,11 @@ func (w *Word) ValidateChain(next IWord) error {
 			Word: nw,
 		}
 	}
+	if w.String() == nw.String() {
+		return &ErrWordDuplicated{
+			Word: nw,
+		}
+	}
 	if w.LastChr() != nw.FirstChr() {
 		return &ErrWordchainInvalid{
 			Prev: w,
@@ -83,6 +91,10 @@ func (e *ErrWordEmpty) Error() string {
 
 func (e *ErrWordShort) Error() string {
 	return fmt.Sprintf("'%s' は、文字数が足りません", e.Word)
+}
+
+func (e *ErrWordDuplicated) Error() string {
+	return fmt.Sprintf("'%s' は、既出です", e.Word)
 }
 
 func (e *ErrWordInvalid) Error() string {

@@ -11,15 +11,17 @@ import (
 
 type (
 	WordchainUsecase struct {
-		r repositories.IWordchainRepository
-		t entities.WordType
+		r     repositories.IWordchainRepository
+		t     entities.WordType
+		limit int
 	}
 )
 
-func NewWordchainUsecase(r repositories.IWordchainRepository, t entities.WordType) *WordchainUsecase {
+func NewWordchainUsecase(r repositories.IWordchainRepository, t entities.WordType, limit int) *WordchainUsecase {
 	return &WordchainUsecase{
-		r: r,
-		t: t,
+		r:     r,
+		t:     t,
+		limit: limit,
 	}
 }
 
@@ -41,32 +43,27 @@ func (u *WordchainUsecase) List(ctx context.Context, i *inputs.WordchainListInpu
 	wc, err := u.r.List(ctx, i.GetLimit())
 	if err != nil {
 		return nil, err
-	} else if wc.Len() == 0 {
-		w, err := entities.GetFirstWordForType(u.t)
-		if err != nil {
-			return nil, err
-		}
-		wc, err = wc.Append(w)
-		if err != nil {
-			return nil, err
-		}
 	}
 	o := outputs.NewWordchainListOutputData(wc)
 	return o, nil
 }
 
 func (u *WordchainUsecase) Append(ctx context.Context, i *inputs.WordchainAppendInputData) error {
-	lw, err := u.r.GetLast(ctx)
+	wc, err := u.r.List(ctx, u.limit)
 	if err != nil {
 		return err
-	} else if lw == nil {
-		lw, err = entities.GetFirstWordForType(u.t)
+	} else if wc.Len() == 0 {
+		fw, err := entities.GetFirstWordForType(u.t)
+		if err != nil {
+			return err
+		}
+		wc, err = wc.Append(fw)
 		if err != nil {
 			return err
 		}
 	}
 	w := i.GetWord()
-	err = lw.ValidateChain(w)
+	_, err = wc.Append(w)
 	if err != nil {
 		return err
 	}
