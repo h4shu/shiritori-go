@@ -14,6 +14,7 @@ services:
     build: ./backend
     image: shiritori-go-backend:v1
     environment:
+      - GROQ_API_KEY
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - POSTGRES_USER

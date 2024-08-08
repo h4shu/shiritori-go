@@ -11,6 +11,10 @@ import (
 )
 
 type (
+	ValidateWordApiMock struct {
+		ValidateVal bool
+		ValidateErr error
+	}
 	WordchainRepositoryMock struct {
 		GetLastVal entities.IWord
 		GetLastErr error
@@ -19,6 +23,17 @@ type (
 		AppendErr  error
 	}
 )
+
+func NewValidateWordApiMock(
+	ValidateVal bool,
+	ValidateErr error,
+) *ValidateWordApiMock {
+	return &ValidateWordApiMock{ValidateVal, ValidateErr}
+}
+
+func (m *ValidateWordApiMock) Validate(word entities.IWord, t entities.WordType) (bool, error) {
+	return m.ValidateVal, m.ValidateErr
+}
 
 func NewWordchainRepositoryMock(
 	GetLastVal entities.IWord,
@@ -53,8 +68,10 @@ func TestAppend(t *testing.T) {
 	lw, err := entities.NewHiraganaWord("しりとり")
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	wc.Append(lw)
+	a := NewValidateWordApiMock(true, nil)
 	m := NewWordchainRepositoryMock(nil, nil, wc, nil, nil)
-	u := intractors.NewWordchainUsecase(m, entities.WordTypeHiragana, 100)
+	u := intractors.NewWordchainUsecase(a, m, ty, 100)
+
 	w, err := entities.NewHiraganaWord("りんご")
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	i := inputs.NewWordchainAppendInputData(w)

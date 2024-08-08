@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"github.com/h4shu/shiritori-go/application/inputs"
+	"github.com/h4shu/shiritori-go/application/interfaces/apis"
+	"github.com/h4shu/shiritori-go/application/interfaces/repositories"
 	"github.com/h4shu/shiritori-go/application/outputs"
-	"github.com/h4shu/shiritori-go/application/repositories"
 	"github.com/h4shu/shiritori-go/domain/entities"
 )
 
@@ -14,14 +15,16 @@ type (
 		r     repositories.IWordchainRepository
 		t     entities.WordType
 		limit int
+		a     apis.IValidateWordApi
 	}
 )
 
-func NewWordchainUsecase(r repositories.IWordchainRepository, t entities.WordType, limit int) *WordchainUsecase {
+func NewWordchainUsecase(a apis.IValidateWordApi, r repositories.IWordchainRepository, t entities.WordType, limit int) *WordchainUsecase {
 	return &WordchainUsecase{
 		r:     r,
 		t:     t,
 		limit: limit,
+		a:     a,
 	}
 }
 
@@ -63,9 +66,16 @@ func (u *WordchainUsecase) Append(ctx context.Context, i *inputs.WordchainAppend
 		}
 	}
 	w := i.GetWord()
-	_, err = wc.Append(w)
+	if _, err = wc.Append(w); err != nil {
+		return err
+	}
+	v, err := u.a.Validate(w, u.t)
 	if err != nil {
 		return err
+	} else if !v {
+		return &entities.ErrWordInvalid{
+			Word: w,
+		}
 	}
 	err = u.r.Append(ctx, w)
 	if err != nil {
