@@ -21,6 +21,9 @@ type (
 	ErrWordDuplicated struct {
 		Word IWord
 	}
+	ErrWordNotFound struct {
+		Word IWord
+	}
 	ErrWordInvalid struct {
 		Word IWord
 	}
@@ -95,6 +98,10 @@ func (e *ErrWordShort) Error() string {
 
 func (e *ErrWordDuplicated) Error() string {
 	return fmt.Sprintf("'%s' は、既出です", e.Word)
+}
+
+func (e *ErrWordNotFound) Error() string {
+	return fmt.Sprintf("'%s' は、現在辞書に登録されていません", e.Word)
 }
 
 func (e *ErrWordInvalid) Error() string {

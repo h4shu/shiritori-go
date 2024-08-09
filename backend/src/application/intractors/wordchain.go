@@ -11,22 +11,29 @@ import (
 
 type (
 	WordchainUsecase struct {
-		r     repositories.IWordchainRepository
+		wcr   repositories.IWordchainRepository
+		wdr   repositories.IWorddictRepository
 		t     entities.WordType
 		limit int
 	}
 )
 
-func NewWordchainUsecase(r repositories.IWordchainRepository, t entities.WordType, limit int) *WordchainUsecase {
+func NewWordchainUsecase(
+	wcr repositories.IWordchainRepository,
+	wdr repositories.IWorddictRepository,
+	t entities.WordType,
+	limit int,
+) *WordchainUsecase {
 	return &WordchainUsecase{
-		r:     r,
+		wcr:   wcr,
+		wdr:   wdr,
 		t:     t,
 		limit: limit,
 	}
 }
 
 func (u *WordchainUsecase) GetLast(ctx context.Context) (*outputs.WordchainGetLastOutputData, error) {
-	w, err := u.r.GetLast(ctx)
+	w, err := u.wcr.GetLast(ctx)
 	if err != nil {
 		return nil, err
 	} else if w == nil {
@@ -40,7 +47,7 @@ func (u *WordchainUsecase) GetLast(ctx context.Context) (*outputs.WordchainGetLa
 }
 
 func (u *WordchainUsecase) List(ctx context.Context, i *inputs.WordchainListInputData) (*outputs.WordchainListOutputData, error) {
-	wc, err := u.r.List(ctx, i.GetLimit())
+	wc, err := u.wcr.List(ctx, i.GetLimit())
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +56,7 @@ func (u *WordchainUsecase) List(ctx context.Context, i *inputs.WordchainListInpu
 }
 
 func (u *WordchainUsecase) Append(ctx context.Context, i *inputs.WordchainAppendInputData) error {
-	wc, err := u.r.List(ctx, u.limit)
+	wc, err := u.wcr.List(ctx, u.limit)
 	if err != nil {
 		return err
 	} else if wc.Len() == 0 {
@@ -63,11 +70,13 @@ func (u *WordchainUsecase) Append(ctx context.Context, i *inputs.WordchainAppend
 		}
 	}
 	w := i.GetWord()
-	_, err = wc.Append(w)
-	if err != nil {
+	if _, err = wc.Append(w); err != nil {
 		return err
 	}
-	err = u.r.Append(ctx, w)
+	if err = u.wdr.Exist(ctx, w); err != nil {
+		return err
+	}
+	err = u.wcr.Append(ctx, w)
 	if err != nil {
 		return err
 	}

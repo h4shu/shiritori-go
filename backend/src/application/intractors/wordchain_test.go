@@ -18,6 +18,11 @@ type (
 		ListErr    error
 		AppendErr  error
 	}
+
+	WorddictRepositoryMock struct {
+		ExistVal bool
+		ExitErr  error
+	}
 )
 
 func NewWordchainRepositoryMock(
@@ -36,6 +41,14 @@ func NewWordchainRepositoryMock(
 	}
 }
 
+func NewWorddictRepositoryMock(
+	ExitErr error,
+) *WorddictRepositoryMock {
+	return &WorddictRepositoryMock{
+		ExitErr: ExitErr,
+	}
+}
+
 func (m *WordchainRepositoryMock) GetLast(ctx context.Context) (entities.IWord, error) {
 	return m.GetLastVal, m.GetLastErr
 }
@@ -46,6 +59,10 @@ func (m *WordchainRepositoryMock) Append(ctx context.Context, w entities.IWord) 
 	return m.AppendErr
 }
 
+func (m *WorddictRepositoryMock) Exist(ctx context.Context, word entities.IWord) error {
+	return m.ExitErr
+}
+
 func TestAppend(t *testing.T) {
 	ctx := context.Background()
 	ty := entities.WordTypeHiragana
@@ -53,8 +70,9 @@ func TestAppend(t *testing.T) {
 	lw, err := entities.NewHiraganaWord("しりとり")
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	wc.Append(lw)
-	m := NewWordchainRepositoryMock(nil, nil, wc, nil, nil)
-	u := intractors.NewWordchainUsecase(m, entities.WordTypeHiragana, 100)
+	mwcr := NewWordchainRepositoryMock(nil, nil, wc, nil, nil)
+	mwdr := NewWorddictRepositoryMock(nil)
+	u := intractors.NewWordchainUsecase(mwcr, mwdr, entities.WordTypeHiragana, 100)
 	w, err := entities.NewHiraganaWord("りんご")
 	assert.Nilf(t, err, "unexpected error: %v", err)
 	i := inputs.NewWordchainAppendInputData(w)
