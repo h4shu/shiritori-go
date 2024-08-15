@@ -28,7 +28,7 @@ const getFetcher = (url: string) => fetch(
 function App() {
   const [errMsg, setErrMsg] = useState("")
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
     const word = form.get("word") as string
